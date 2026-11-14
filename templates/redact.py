@@ -17,7 +17,7 @@ def walk(o, in_mcp=False):
     if isinstance(o, dict):
         out = {}
         for k, v in o.items():
-            if k.startswith("cached") or k.endswith("Cache") or k in ("additionalModelOptionsCache",):
+            if k.startswith("cached") or k.endswith("Cache") or k in ("additionalModelOptionsCache", "seenSecurityWarnings"):  # seenSecurityWarnings＝看過的警告雜湊（介面狀態，非金鑰；64 位 hex 會誤觸掃描）
                 out[k] = "<dropped-cache>"
             elif k == "mcpServers" and isinstance(v, dict):
                 out[k] = {n: {kk: (vv if kk in KEEP_IN_MCP else (walk(vv, True) if isinstance(vv, (dict, list)) else R)) for kk, vv in s.items()} if isinstance(s, dict) else R for n, s in v.items()}
