@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- install.sh 會把 __LABEL__ __SCRIPT__ __LOG__ __HOUR__ __MINUTE__ 換掉，產生三份：llm-home.backup、repos.backup、restic。
+     睡著時錯過的排程醒來會補跑一次，不需要 pmset 喚醒（PITFALLS #4）。
+     ⚠️ /bin/bash（restic 那份再加 restic 執行檔）要給「完整磁碟取用」，不然讀不到 ~/Documents（PITFALLS #1）。 -->
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>__LABEL__</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/bin/bash</string>
+		<string>__SCRIPT__</string>
+	</array>
+	<key>StartCalendarInterval</key>
+	<dict>
+		<key>Hour</key>
+		<integer>__HOUR__</integer>
+		<key>Minute</key>
+		<integer>__MINUTE__</integer>
+	</dict>
+	<key>StandardOutPath</key>
+	<string>__LOG__</string>
+	<key>StandardErrorPath</key>
+	<string>__LOG__</string>
+</dict>
+</plist>

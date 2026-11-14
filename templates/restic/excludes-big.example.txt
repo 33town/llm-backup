@@ -1,0 +1,5 @@
+# 選用：特別大、要不要備份還沒決定的資料夾（例：聊天 App 資料動輒上百 GiB）。
+# 複製成 ~/.config/restic/excludes-big.txt 就會被排除；想備份時 `touch ~/.config/restic/include-big`。
+# 一樣要寫完整路徑。
+# __HOME__/Library/Containers/com.tencent.xinWeChat
+# __HOME__/Library/Group Containers/xxxx.com.example.chat

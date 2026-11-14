@@ -1,0 +1,37 @@
+# restic 排除清單。install.sh 會把 __HOME__ 換成你的家目錄後放到 ~/.config/restic/excludes.txt。
+# ⚠️ restic 不展開 ~，絕對路徑要寫完整（PITFALLS #9）。
+# 原則：拿不準一律包含。這份只排「可重建的快取」和「別處已有正本」的東西。
+
+# --- 快取／可重建 ---
+**/Library/Caches
+**/.cache
+**/.npm/_cacache
+**/node_modules
+**/.venv
+**/venv
+**/__pycache__
+**/.Trash
+**/Library/Developer/Xcode/DerivedData
+__HOME__/Library/Application Support/Google/Chrome/*/Cache*
+__HOME__/Library/Application Support/Google/Chrome/OptGuideOnDeviceModel
+
+# --- 雲端硬碟同步資料夾：雲端已有正本，而且「按需下載」的檔 restic 會算成完整大小（PITFALLS #10）---
+__HOME__/Library/CloudStorage
+__HOME__/Library/Mobile Documents
+__HOME__/Dropbox
+
+# --- 照片／信件：iCloud 照片、Gmail 等已有正本（不是的話把這兩行刪掉）---
+__HOME__/Pictures/Photos Library.photoslibrary
+__HOME__/Library/Mail
+
+# --- Claude 桌面版可重新下載的部分（逐字稿在 local-agent-mode-sessions，不排）---
+__HOME__/Library/Application Support/Claude/vm_bundles
+__HOME__/Library/Application Support/Claude/Cache
+__HOME__/Library/Application Support/Claude/Code Cache
+
+# --- Codex 套件與暫存（可重建）---
+__HOME__/.codex/packages
+__HOME__/.codex/.tmp
+
+# 你自己的：大但不是知識的資料夾（影片、VM 映像、遊戲…）加在下面
+# __HOME__/Movies
