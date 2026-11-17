@@ -42,6 +42,7 @@ put() {  # 範本相對路徑 目的相對路徑
 for f in lib.sh sync.sh auto-backup.sh redact.py; do put "$f" "$f"; done
 for f in restic-env.sh nightly.sh preflight.sh setup-secrets.sh; do put "restic/$f" "restic/$f"; done
 for f in repos-push.sh check-repos.sh push-if-stale.sh; do put "git/$f" "git/$f"; done
+put cloud-memory/EXPORT-PROMPT.md cloud-memory/EXPORT-PROMPT.md
 if [ ! -f "$LLM_HOME/.gitignore" ]; then
   say ".gitignore（金鑰、venv、Codex /import 產生的 .codex/ .agents/）"
   run tee "$LLM_HOME/.gitignore" >/dev/null <<'EOF'
@@ -101,5 +102,6 @@ cat <<EOF
  6) 裝排程（全量成功後再裝）：
       for p in "$LLM_HOME"/launchd/$LABEL_PREFIX.*.plist; do cp "\$p" ~/Library/LaunchAgents/ && launchctl bootstrap gui/\$(id -u) ~/Library/LaunchAgents/"\$(basename "\$p")"; done
       launchctl kickstart gui/\$(id -u)/$LABEL_PREFIX.restic     # 立刻跑一次，看 ~/Library/Logs/restic.log
- 7) 驗證（docs/VERIFY.md）：restic check、抽幾個檔 restore 回暫存資料夾打開看。
+ 7) 隱藏記憶每週匯出：照 $LLM_HOME/cloud-memory/EXPORT-PROMPT.md 最上面的步驟，在 Cowork（不進任何 Project）建一個每週排程，Run now 一次
+ 8) 驗證（docs/VERIFY.md）：restic check、抽幾個檔 restore 回暫存資料夾打開看。
 EOF

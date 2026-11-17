@@ -30,11 +30,11 @@
  │ (private)    │             │ (private)      │          │ 14 天／8 週／12 個月   │
  └──────────────┘             └────────────────┘          └──────────────────────┘
         ▲                                                            ▲
-        │ 手動匯出                                                    │ 開門鑰匙
+        │ 每週排程                                                    │ 開門鑰匙
  ┌──────┴────────────────┐                                ┌──────────┴───────────┐
- │ claude.ai 雲端記憶      │                                │ 密碼管理器（＋紙本）    │
- │ Projects／帳號層        │                                │ restic 密碼、S3 key、   │
- │ → 倒出成 md 進 repo     │                                │ GitHub PAT             │
+ │ claude.ai 隱藏記憶      │                                │ 密碼管理器（＋紙本）    │
+ │ 帳號層＋每個 Project     │                                │ restic 密碼、S3 key、   │
+ │ → Cowork 每週原文倒出   │                                │ GitHub PAT             │
  └───────────────────────┘                                └──────────────────────┘
 ```
 
@@ -44,7 +44,7 @@
 |---|---|---|---|---|---|
 | **A 知識＋程式** | 你所有工作 repo | 本機 | GitHub private（也會在 restic 裡） | commit 後每天 push | 當天沒 commit 的改動 |
 | **B LLM 設定** | `~/.claude`（CLAUDE.md、commands、skills、agents、`projects/*/memory`）、`~/.codex`（AGENTS.md、skills、memories）、去金鑰的 `~/.claude.json`／`config.toml`／`.zshrc`、launchd plist、git hooks | 本機 | `llm-home` repo（也會在 restic 裡） | 每天 | 不到 24 小時 |
-| **B′ 雲端記憶** | claude.ai 的 Project 記憶、帳號層記憶、Project 說明 | Anthropic 伺服器 | 手動倒出成 md 放進 repo | 偶爾 | 小（重要決策本來就該寫在 repo） |
+| **B′ 隱藏記憶** | claude.ai 帳號層記憶、每個 Project 的記憶（含 Cowork space 記憶） | Anthropic 伺服器 | Cowork 每週排程原文倒出到 `llm-home/cloud-memory/snapshot/`，再跟著 llm-home 進 git 和 restic | 每週 | 不到 7 天 |
 | **C 金鑰** | `~/.config/*`、`.env`、`~/.ssh`、`~/.claude.json` | 本機 | 跟著 restic 加密備份；開門鑰匙在密碼管理器；清單在 `SECRETS-INVENTORY.md` | 每天 | — |
 | **D 大檔＋其他** | gitignore 掉的原始資料、Claude／Codex 對話逐字稿、瀏覽器 profile、個人檔案 | 本機 | restic 全量加密 | 每天 | 不到 24 小時 |
 
@@ -63,8 +63,10 @@
 
 | log | 要看到 |
 |---|---|
-| `~/Library/Logs/llm-home-backup.log` | `push 完成` 或 `沒有變動` |
+| `~/Library/Logs/llm-home-backup.log` | `push 完成` 或 `沒有變動`；`隱藏記憶匯出：<日期>（n 天前）` |
 | `~/Library/Logs/repos-backup.log` | 每個 repo 一行 `push 完成` 或 `沒有未推的 commit` |
 | `~/Library/Logs/restic.log` | `snapshot xxxxxxxx saved：…` |
+
+隱藏記憶匯出看 `~/llm-home/cloud-memory/LAST-RUN.md`；超過 8 天沒更新，`llm-home-backup.log` 會出現 ⚠️。
 
 一次檢查所有 repo 有沒有漏推：`bash ~/llm-home/git/check-repos.sh`。

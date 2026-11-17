@@ -62,11 +62,12 @@
 **12. Claude Code 的記憶資料夾名稱＝工作目錄的絕對路徑**
 - `~/.claude/projects/-Users-alice-Documents-MyProject/memory/`。新電腦的使用者名稱或專案位置不一樣，還原後要把資料夾改名才對得上。最簡單的做法：新電腦用同一個使用者名稱、同樣的路徑。
 
-**13. claude.ai 雲端記憶（Projects、帳號層）本機看不到**
-- 檔案備份不到。要請 Claude 桌面版或網頁版把記憶與 Project 說明「倒出成 md」，放進 repo。這只能手動做，偶爾做一次就好；重要的決策本來就應該寫在 repo。
+**13. claude.ai 隱藏記憶（帳號層、每個 Project）本機看不到**
+- 檔案備份抓不到。只有 Cowork 讀得到（memory 工具），Claude Code 和雲端 routine 都看不到。
+- 解法：Cowork 每週排程照 `templates/cloud-memory/EXPORT-PROMPT.md` 原文倒出到 `llm-home/cloud-memory/`，跟著每天的 git 和 restic 備份。
 
-**14. Claude 桌面版（Cowork）每個 space 的記憶不能自動還原**
-- 新帳號或新電腦的 space ID 會不一樣。`sync.sh` 只備份不還原。新電腦上先建好 space，再把 `cowork/<名>/` 的檔案複製進去，或者用 import-memory 匯入。
+**14. 隱藏記憶不能自動還原**
+- 新帳號或新電腦的 Project／space ID 會不一樣。從 `cloud-memory/snapshot/`（或舊的 `cowork/<名>/`）挑要的貼回去，或者用 import-memory 匯入。
 
 **15. 設定檔裡夾著 token**
 - `~/.claude.json`（MCP 金鑰、帳號 ID）、`~/.codex/config.toml`、`~/.zshrc` 的 `export XXX_KEY=`。
@@ -95,3 +96,18 @@
 
 **24. 自動化只 push，不 pull、不 force**
 - 遠端比本機新（別台電腦或 CI 推過）就讓它失敗、記 log，等人處理。自動 pull 或 force 遲早會蓋掉東西。
+
+## 隱藏記憶（2026-11 新增）
+
+**25. Cowork 的 space 記憶在 2026-09 搬上了雲端，本機備份會默默停住**
+- 症狀：`llm-home/cowork/` 從某天起再也沒有更新，但備份 log 一切正常。
+- 原因：Claude 桌面版把每個 space 的記憶從 `~/Library/Application Support/Claude/local-agent-mode-sessions/…/spaces/*/memory/` 搬到伺服器端（`space-memory-copy/` 留有搬遷紀錄）。本機資料夾還在，只是不再更新。
+- 解法：改用每週匯出（#13）。本機那份當成舊快照保留。
+
+**26. 在 Project 外面建排程，一個就看得到全部記憶**
+- Project 裡面的 Cowork 只看得到那個 Project＋帳號層；Project 外面的看得到全部（實測：帳號層 22＋9 個 Project 共 160 檔）。所以只要建**一個**排程，不用每個 Project 各建一個。也會順便抓到你已經忘記的舊 Project。
+
+**27. 匯出排程沒有刪除權限 → 記憶刪掉了，快照還留著**
+- Cowork 排程常常不能刪檔，只能覆寫，結果記憶裡已經刪掉的檔，快照裡會一直留著舊版本。對備份是好事（救得回來），但快照會跟實際記憶對不上。
+- 解法：`EXPORT-PROMPT.md` 要求把這些檔移到 `snapshot/_removed/<日期>/`，做不到就列在 `LAST-RUN.md` 的 `removed_in_memory`。另外排程最好也只重讀 `updated` 有變的檔，160 個檔每週全讀很花時間。
+- 另外一定要有過期警報：`auto-backup.sh` 檢查 `LAST-RUN.md`，超過 8 天沒更新就寫 ⚠️（可接 `NOTIFY_CMD` 推通知）。排程停了不會有人告訴你。

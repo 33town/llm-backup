@@ -31,5 +31,5 @@
 8. **Python 環境**：各專案 `uv venv && uv pip install -e .`；`~/.claude/scripts/.venv` 用 `llm-home/claude/scripts/requirements.txt` 裝回。
 9. **排程**：`cp ~/llm-home/launchd/<prefix>.*.plist ~/Library/LaunchAgents/`，再逐個 `launchctl bootstrap gui/$(id -u) <plist>`。到「完整磁碟取用」加入 `/bin/bash` 和 restic。
 10. **LLM 登入**：`claude`、`codex login`。Codex skills 已經由 `sync.sh restore` 帶回 `~/.codex/skills/`。
-    Claude 桌面版的 space 記憶要手動匯入（PITFALLS #14）；claude.ai 雲端記憶從 repo 的匯出檔貼回去。
+    隱藏記憶不會自動還原：從 `llm-home/cloud-memory/snapshot/` 挑要的貼回 Claude（或用 import-memory 匯入）。新電腦也要重建 Cowork 的每週匯出排程（`cloud-memory/EXPORT-PROMPT.md`）。
 11. **驗證**：照 `VERIFY.md` 做一遍。再請 LLM 讀某個 repo 的 `AGENTS.md`／`CLAUDE.md`，問它三個只有你的規則才答得出來的問題，答對才算接上。

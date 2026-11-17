@@ -8,6 +8,24 @@ REPO="$(cd "$(dirname "$0")" && pwd)"
 cd "$REPO" || exit 1
 
 echo "=== $(date '+%F %T')"
+
+# 隱藏記憶每週匯出的過期檢查：Cowork 排程每週寫 cloud-memory/LAST-RUN.md（見 cloud-memory/EXPORT-PROMPT.md）。
+# 超過 CLOUD_MEMORY_MAX_AGE_DAYS（預設 8）天沒更新就在 log 寫 ⚠️。有 NOTIFY_CMD 的話也會呼叫它（例：發 Slack／ClickUp）。
+if [ -f cloud-memory/LAST-RUN.md ]; then
+  last="$(awk '/^last_run:/{sub(/^last_run: */, ""); print; exit}' cloud-memory/LAST-RUN.md)"
+  if d="$(date -j -f '%Y-%m-%d' "${last:0:10}" +%s 2>/dev/null)"; then
+    age=$(( ($(date +%s) - d) / 86400 ))
+    if [ "$age" -gt "${CLOUD_MEMORY_MAX_AGE_DAYS:-8}" ]; then
+      msg="⚠️ 隱藏記憶匯出已經 ${age} 天沒跑（last_run ${last}），檢查 Cowork 排程"
+      echo "$msg"; [ -n "${NOTIFY_CMD:-}" ] && $NOTIFY_CMD "$msg" || true
+    else
+      echo "隱藏記憶匯出：${last}（${age} 天前）"
+    fi
+  else
+    echo "⚠️ cloud-memory/LAST-RUN.md 的 last_run 讀不懂（${last}）"
+  fi
+fi
+
 ./sync.sh backup >/dev/null
 git add -A
 if git diff --cached --quiet; then

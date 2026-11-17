@@ -33,7 +33,7 @@
 |---|---|---|---|
 | A 知識＋程式 | 所有工作 repo | GitHub private | 每天自動 push |
 | B LLM 設定 | ~/.claude（CLAUDE.md、commands、skills、projects/*/memory）、~/.codex（AGENTS.md、skills、memories）、去金鑰的設定檔副本、launchd plist | 單獨一個 llm-home repo，用 sync.sh 單向同步 | 每天 |
-| B′ 雲端記憶 | claude.ai Project／帳號層記憶（本機看不到） | 請 Claude 桌面版／網頁版倒出成 md 放進 repo | 手動，偶爾 |
+| B′ 隱藏記憶 | claude.ai 帳號層＋每個 Project 的記憶，含 Cowork（本機看不到） | Cowork 每週排程照 templates/cloud-memory/EXPORT-PROMPT.md 原文倒出到 llm-home/cloud-memory/ | 每週 |
 | C＋D 金鑰＋大檔 | 整個 $HOME：金鑰、gitignore 掉的資料、對話逐字稿 | restic 加密增量 → 雲端 | 每天，每週 forget --prune |
 
 restic 排除：雲端硬碟同步資料夾、快取、Photos、Mail、特別大的聊天 App 資料（先問我）。
@@ -45,13 +45,14 @@ restic 排除：雲端硬碟同步資料夾、快取、Photos、Mail、特別大
 - Claude Code 記憶資料夾名＝工作目錄絕對路徑 → 新電腦使用者名稱不同要改名。
 - 有金鑰的設定檔只備份「去掉金鑰」的副本，掃到疑似金鑰就整份不寫。
 - Codex /import 產生的 .codex/、.agents/ 可能有金鑰明文 → 加進 .gitignore。
+- Claude 桌面版（Cowork）的記憶已經搬上雲端，本機資料夾不會再更新 → 一定要設每週匯出排程（在 Project 外面建，一個就看得到全部）；自動備份要檢查 LAST-RUN.md 有沒有過期。
 - restic exit 3 是部分檔案讀不到，不是失敗；殘留的鎖會讓 prune 默默沒跑 → restic unlock。
 
 ## 交付
 1. llm-home/BOOTSTRAP.md：新電腦從零開始的步驟（照 docs/BOOTSTRAP.md 改成我的版本）
 2. llm-home/SECRETS-INVENTORY.md：每把金鑰的名字、用途、放哪、遺失時怎麼重發（不寫值）
 3. 每個工作 repo 根目錄放 AGENTS.md，寫「先讀 CLAUDE.md」，讓 Codex 也接得上
-4. 三個 launchd 排程（repo push、llm-home sync、restic），log 寫到 ~/Library/Logs/
+4. 三個 launchd 排程（repo push、llm-home sync、restic），log 寫到 ~/Library/Logs/；外加 Cowork 每週隱藏記憶匯出排程（要我自己在 Cowork 建，你給我步驟）
 5. **驗證**（docs/VERIFY.md 全部打勾才算完成）：restic check 通過；抽 3 個檔 restore 回暫存資料夾打開看；
    所有 repo 都 push 了；每個排程用 kickstart 實際跑過一次，log 裡有 snapshot id
 6. 最後給我一段白話說明：每天看哪三個 log、怎麼檢查有沒有漏推、最多會丟多少

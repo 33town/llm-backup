@@ -15,6 +15,7 @@
 - [ ] 每個排程都 `launchctl kickstart gui/$(id -u)/<label>` 實際跑過一次，log 裡：
   - restic：有 `snapshot xxxxxxxx saved`，`~/Documents` 底下沒有 `permission denied`
   - repos／llm-home：有 `push 完成` 或 `沒有變動`
+- [ ] Cowork 每週匯出排程 Run now 過一次：`cloud-memory/LAST-RUN.md` 的 `total_files` 跟 Cowork 列出的記憶總數一樣、`errors: none`
 - [ ] restic 密碼、S3 key、GitHub PAT 都在密碼管理器裡，主密碼寫在紙上
 
 ## 之後

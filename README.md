@@ -2,7 +2,7 @@
 
 **讓這台 Mac 隨時可以消失。** 一套給 Claude Code／Codex 使用者的整機備份做法：工作 repo、LLM 的記憶和設定、金鑰、大檔全部備份，換一台新電腦（甚至換一家 LLM）也能接著做。
 
-> *English summary:* A battle-tested recipe for backing up a Mac that runs Claude Code / Codex — git for repos and LLM config (`~/.claude`, `~/.codex`, per-project memory), restic → S3-compatible storage for everything else (secrets, transcripts, raw data), launchd for scheduling. Includes templates, a dry-run-by-default installer, a prompt to hand to your own LLM, and a list of 24 pitfalls we actually hit. Docs are in Traditional Chinese.
+> *English summary:* A battle-tested recipe for backing up a Mac that runs Claude Code / Codex — git for repos and LLM config (`~/.claude`, `~/.codex`, per-project memory), restic → S3-compatible storage for everything else (secrets, transcripts, raw data), launchd for scheduling. Includes templates, a dry-run-by-default installer, a prompt to hand to your own LLM, and a weekly Cowork job that exports claude.ai's server-side memory, and a list of 27 pitfalls we actually hit. Docs are in Traditional Chinese.
 
 ## 最快的用法：交給你的 LLM
 
@@ -24,7 +24,7 @@ git clone https://github.com/33town/llm-backup && cd llm-backup
 |---|---|---|
 | A 知識＋程式 | 你的工作 repo | GitHub private |
 | B LLM 設定 | `~/.claude`（CLAUDE.md、commands、skills、每個專案的 memory）、`~/.codex`、去金鑰的設定檔副本、排程 | `llm-home` private repo |
-| B′ 雲端記憶 | claude.ai Project／帳號層記憶 | 手動倒出成 md 進 repo |
+| B′ 隱藏記憶 | claude.ai 帳號層＋每個 Project 的記憶（含 Cowork） | Cowork 每週排程原文倒出到 `llm-home/cloud-memory/`，跟著 git 和 restic 備份 |
 | C＋D 金鑰＋大檔 | 整個 `$HOME`（排除快取和雲端同步資料夾） | restic 加密 → R2／B2／S3 |
 
 開門的鑰匙只有一組：密碼管理器裡的 restic 密碼和 S3 key。架構圖和設計理由在 [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)。
@@ -35,7 +35,7 @@ git clone https://github.com/33town/llm-backup && cd llm-backup
 |---|---|
 | [`PROMPT.md`](PROMPT.md) | 貼給 LLM 的完整指令 |
 | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | 四層架構、為什麼這樣分、每天看哪三個 log |
-| [`docs/PITFALLS.md`](docs/PITFALLS.md) | **24 個實際踩過的坑**：`~/Documents` 權限、剛醒來網路沒通、restic exit 3、殘留的鎖、IPv6、記憶資料夾用路徑命名、設定檔夾著 token… |
+| [`docs/PITFALLS.md`](docs/PITFALLS.md) | **27 個實際踩過的坑**：`~/Documents` 權限、剛醒來網路沒通、restic exit 3、殘留的鎖、IPv6、記憶資料夾用路徑命名、設定檔夾著 token… |
 | [`docs/BOOTSTRAP.md`](docs/BOOTSTRAP.md) | 新電腦從零開始的 11 步 |
 | [`docs/VERIFY.md`](docs/VERIFY.md) | 驗證清單：沒還原過就不算有備份 |
 | [`docs/SECRETS-INVENTORY.template.md`](docs/SECRETS-INVENTORY.template.md) | 金鑰清單範本（只記名字和位置） |
@@ -52,6 +52,7 @@ git clone https://github.com/33town/llm-backup && cd llm-backup
 | `restic/excludes.txt` | 排除清單起點 |
 | `git/repos-push.sh` | push `~/git-store/*.git`（給 launchd 用，繞過 `~/Documents` 權限） |
 | `git/push-if-stale.sh` | 另一種做法：post-commit hook 推 |
+| `cloud-memory/EXPORT-PROMPT.md` | Cowork 每週排程讀的匯出指令（設定步驟寫在檔案最上面） |
 | `git/check-repos.sh` | 唯讀檢查所有 repo 有沒有漏 commit、漏 push |
 | `launchd/backup.plist.template` | 三個每日排程 |
 
